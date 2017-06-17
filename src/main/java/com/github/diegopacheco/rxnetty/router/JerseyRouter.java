@@ -13,7 +13,9 @@ import java.util.Map;
 
 import javax.ws.rs.Path;
 
-import com.github.diegopacheco.rxnetty.router.test.RestInfo;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
@@ -32,8 +34,10 @@ public class JerseyRouter{
 	private String basePackage;
 	private List<Class> classes;
 	private Map<String,Class> handlers = new HashMap<>();
+	private Injector injector;
 	
-	public JerseyRouter(String basePackage){
+	public JerseyRouter(String basePackage,AbstractModule... modules){
+		this.injector = Guice.createInjector(modules);
 		this.basePackage = basePackage;
 		init();
 		System.out.println("Classes: " + classes);
@@ -90,9 +94,10 @@ public class JerseyRouter{
 	}
 	
 	public Observable handle(HttpServerRequest<ByteBuf> req, HttpServerResponse<ByteBuf> resp) {
+		System.out.println(injector);
 		System.out.println(handlers);
 		System.out.println(req.getUri());
-		return new RestInfo().workOb();
+		return Observable.just("OK");
 	}	
 	
 }

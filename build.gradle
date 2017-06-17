@@ -19,7 +19,9 @@ repositories {
 dependencies {
 	compile([
 	       'io.reactivex:rxnetty-http:0.5.2',
-	     
+	     	
+	       'com.google.inject:guice:4.1.0',
+	     	
 	       'org.glassfish.jersey.core:jersey-server:2.7',
 		   'org.glassfish.jersey.containers:jersey-container-servlet-core:2.7',
 		   'org.glassfish.jersey.containers:jersey-container-jetty-http:2.7',

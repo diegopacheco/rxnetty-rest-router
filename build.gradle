@@ -1,0 +1,36 @@
+apply plugin: "eclipse"
+apply plugin: "java"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+sourceSets {
+    main.java.srcDirs = ["src/main/java"]
+}
+
+repositories {
+  maven { url 'http://repo.spring.io/libs-milestone' }
+  maven { url 'http://repo.spring.io/libs-release' }
+  mavenCentral()
+  maven { url "https://oss.sonatype.org/content/groups/public/" }
+  mavenLocal()
+}
+
+dependencies {
+	compile([
+	       'io.reactivex:rxnetty-http:0.5.2',
+	     
+	       'org.glassfish.jersey.core:jersey-server:2.7',
+		   'org.glassfish.jersey.containers:jersey-container-servlet-core:2.7',
+		   'org.glassfish.jersey.containers:jersey-container-jetty-http:2.7',
+    ])
+    testCompile([
+	       'junit:junit:4.12',
+    ])
+}
+
+eclipse {
+    classpath {
+       downloadSources=true
+    }
+}

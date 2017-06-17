@@ -23,13 +23,14 @@ public class JerseyRouterTest {
 	               .start((req, resp) ->
 	                   resp
 	                       .setHeader("Content-Lenght", 2)
-	                       .writeStringAndFlushOnEach(new JerseyRouter("com.github.diegopacheco.rxnetty.router.test").handle(req, resp))
+	                       .writeStringAndFlushOnEach(new JerseyRouter("com.github.diegopacheco.rxnetty.router.test",new GuiceModule()).handle(req, resp))
 	               ).awaitShutdown();
 			}
     	   }).start();
     	   
     	   Thread.sleep(2000L);
-    	   Assert.assertEquals(200, ((HttpURLConnection)new URL("http://127.0.0.1:8086").openConnection()).getResponseCode());
+    	   Assert.assertEquals(200, ((HttpURLConnection)new URL("http://127.0.0.1:8086/info/ob").openConnection()).getResponseCode());
+    	   Assert.assertEquals(200, ((HttpURLConnection)new URL("http://127.0.0.1:8086/info/now").openConnection()).getResponseCode());
 	}
 	
 }

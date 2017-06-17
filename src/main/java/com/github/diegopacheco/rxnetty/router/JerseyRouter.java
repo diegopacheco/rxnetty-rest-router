@@ -3,6 +3,7 @@ package com.github.diegopacheco.rxnetty.router;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,9 +14,9 @@ import java.util.Map;
 
 import javax.ws.rs.Path;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
@@ -33,10 +34,10 @@ public class JerseyRouter{
 	
 	private String basePackage;
 	private List<Class> classes;
-	private Map<String,Class> handlers = new HashMap<>();
+	private Map<String,Method> handlers = new HashMap<>();
 	private Injector injector;
 	
-	public JerseyRouter(String basePackage,AbstractModule... modules){
+	public JerseyRouter(String basePackage,Module... modules){
 		this.injector = Guice.createInjector(modules);
 		this.basePackage = basePackage;
 		init();
@@ -79,12 +80,16 @@ public class JerseyRouter{
 	        } else if (file.getName().endsWith(".class")) {
 	            try {
 	            	Class c = Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6));
-					Annotation annotation = c.getDeclaredAnnotation(Path.class);
-	            	if (annotation!=null){
-	            		handlers.put(((Path)annotation).value(), c);
+					Annotation annotationClass = c.getDeclaredAnnotation(Path.class);
+	            	if (annotationClass!=null){
+	            		for(Method m : c.getDeclaredMethods()){
+	            			Annotation annotationPath = m.getDeclaredAnnotation(Path.class);
+	            			if(annotationPath!=null){
+	            				handlers.put( ((Path)annotationClass).value() + "/" + ((Path)annotationPath).value(), m);
+	            			}
+	            		}
 	            		classes.add(c);
 	            	}
-	            		
 				} catch (ClassNotFoundException e) {
 					throw new RuntimeException(e); 
 				}
@@ -94,10 +99,29 @@ public class JerseyRouter{
 	}
 	
 	public Observable handle(HttpServerRequest<ByteBuf> req, HttpServerResponse<ByteBuf> resp) {
-		System.out.println(injector);
-		System.out.println(handlers);
-		System.out.println(req.getUri());
-		return Observable.just("OK");
-	}	
+		System.out.println("***********************");
+		System.out.println("Injector: " + injector);
+		System.out.println("Handler:"  + handlers);
+		System.out.println("URI: " + req.getUri());
+		
+		Method m = handlers.get(req.getUri());
+		System.out.println("Method Handler: " + m);
+		
+		Object insatance = injector.getInstance(m.getDeclaringClass());
+		System.out.println("Instance: " + insatance);
+		
+		Object result = null;
+		try {
+			result = m.invoke(insatance, null);
+			if(!(result instanceof Observable)){
+				result = Observable.just(result);
+			}
+			System.out.println(result);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+		return (Observable)result;
+	}
 	
 }

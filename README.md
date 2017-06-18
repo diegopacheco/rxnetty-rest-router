@@ -51,14 +51,14 @@ import rx.Observable;
 @Path("/info")
 public class RestInfo {
   
-  @GET
+        @GET
 	@Path("rr")
 	public Observable<String> workObRes(HttpServerRequest<ByteBuf> req,HttpServerResponse<ByteBuf> resp){
 		resp.setHeader("CREATED_BY", "DIEGO");
 		return Observable.just("OKReqResp");
 	}
   
-  @GET
+        @GET
 	@Path("now")
 	public String work(){
 		return "OK";
@@ -72,5 +72,5 @@ curl -v http://127.0.0.1:9090/info/now
 curl -v http://127.0.0.1:9090/info/rr
 ```
 
-Cheers,
+Cheers, <BR>
 Diego Pacheco

@@ -120,3 +120,36 @@ nexusStaging {
   password ossrhPassword
   packageGroup "com.github.diegopacheco"
 }
+
+task generatePom << {
+    pom {
+        project {
+            name project.name
+            description project.description
+            groupId group
+            artifactId archivesBaseName
+            version version
+            packaging 'jar'
+            url 'https://github.com/diegopacheco/rxnetty-rest-router'
+            scm {
+                connection 'scm:git:https://github.com/diegopacheco/rxnetty-rest-router.git'
+                developerConnection 'scm:git:git@github.com:diegopacheco/rxnetty-rest-router.git'
+                url 'https://github.com/diegopacheco/rxnetty-rest-router.git'
+            }
+            licenses {
+                license {
+                    name 'The Unlicense'
+                    url 'http://unlicense.org/'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id = 'diegopacheco'
+                    name = 'Diego Pacheco'
+                    email = 'diego.pacheco.it@mail.com'
+                }
+            }
+        }
+    }.writeTo("$buildDir/pom.xml")
+}

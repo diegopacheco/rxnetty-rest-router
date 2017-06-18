@@ -25,6 +25,7 @@ public class RxNettyServerBuilderTest {
 	    Thread.sleep(2000L);
  	    Assert.assertEquals(200, ((HttpURLConnection)new URL("http://127.0.0.1:9090/info/ob").openConnection()).getResponseCode());
  	    Assert.assertEquals(200, ((HttpURLConnection)new URL("http://127.0.0.1:9090/info/now").openConnection()).getResponseCode());
+ 	    Assert.assertEquals(200, ((HttpURLConnection)new URL("http://127.0.0.1:9090/info/rr").openConnection()).getResponseCode());
 	}
 	
 }

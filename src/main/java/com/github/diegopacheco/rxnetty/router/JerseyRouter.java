@@ -1,18 +1,9 @@
 package com.github.diegopacheco.rxnetty.router;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.Path;
 
 import org.apache.log4j.Logger;
 
@@ -31,73 +22,21 @@ import rx.Observable;
  * @author diegopacheco
  *
  */
-@SuppressWarnings({"rawtypes","unchecked"})
+@SuppressWarnings({"rawtypes"})
 public class JerseyRouter {
 	
 	private final static Logger logger = Logger.getLogger(JerseyRouter.class);
-	
-	private String basePackage;
-	private Map<String,Method> handlers = new HashMap<>();
+
 	private Injector injector;
+	private Map<String,Method> handlers = new HashMap<>();
+	private AnnotationScanner scanner;
 	
 	public JerseyRouter(String basePackage,Module... modules){
+		logger.info("Scanning base packages: " + basePackage);
+		
 		this.injector = Guice.createInjector(modules);
-		this.basePackage = basePackage;
-		logger.info("Scanning base packages: " + basePackage); 
-		init();
-	}
-	
-	private void init(){
-	    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-	    assert classLoader != null;
-	    
-	    String path = basePackage.replace('.', '/');
-	    Enumeration<URL> resources;
-		try {
-			resources = classLoader.getResources(path);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	    List<File> dirs = new ArrayList<File>();
-	    while (resources.hasMoreElements()) {
-	        URL resource = resources.nextElement();
-	        dirs.add(new File(resource.getFile()));
-	    }
-	    ArrayList<Class> classes = new ArrayList<Class>();
-	    for (File directory : dirs) {
-	        classes.addAll(findClasses(directory, basePackage));
-	    }
-	}
-	
-	private List<Class> findClasses(File directory, String packageName){
-	    List<Class> classes = new ArrayList<Class>();
-	    if (!directory.exists()) {
-	        return classes;
-	    }
-	    File[] files = directory.listFiles();
-	    for (File file : files) {
-	        if (file.isDirectory()) {
-	            assert !file.getName().contains(".");
-	            classes.addAll(findClasses(file, packageName + "." + file.getName()));
-	        } else if (file.getName().endsWith(".class")) {
-	            try {
-	            	Class c = Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6));
-					Annotation annotationClass = c.getDeclaredAnnotation(Path.class);
-	            	if (annotationClass!=null){
-	            		for(Method m : c.getDeclaredMethods()){
-	            			Annotation annotationPath = m.getDeclaredAnnotation(Path.class);
-	            			if(annotationPath!=null){
-	            				handlers.put( ((Path)annotationClass).value() + "/" + ((Path)annotationPath).value(), m);
-	            			}
-	            		}
-	            		classes.add(c);
-	            	}
-				} catch (ClassNotFoundException e) {
-					throw new RuntimeException(e); 
-				}
-	        }
-	    }
-	    return classes;
+		scanner = new AnnotationScanner(basePackage);
+		handlers = scanner.getHandlers();
 	}
 	
 	public Observable handle(HttpServerRequest<ByteBuf> req, HttpServerResponse<ByteBuf> resp) {

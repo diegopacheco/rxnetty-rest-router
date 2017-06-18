@@ -38,6 +38,7 @@ public class RestInfo {
 	@GET
 	@Path("rr")
 	public Observable<String> workObRes(HttpServerRequest<ByteBuf> req,HttpServerResponse<ByteBuf> resp){
+		resp.setHeader("CREATED_BY", "DIEGO");
 		return Observable.just("OKReqResp");
 	}
 	

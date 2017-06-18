@@ -2,7 +2,6 @@ package com.github.diegopacheco.rxnetty.builder;
 
 import org.apache.log4j.Logger;
 
-import com.github.diegopacheco.rxnetty.builder.test.GuiceModule;
 import com.github.diegopacheco.rxnetty.router.JerseyRouter;
 import com.google.inject.Module;
 
@@ -48,13 +47,5 @@ public class RxNettyServerBuilder {
 		server.start((req, resp) ->
     		resp.writeStringAndFlushOnEach(router.handle(req, resp))
 		).awaitShutdown();
-	}
-	
-	public static void main(String[] args) {
-		new RxNettyServerBuilder()
-		  .withPort(9090)
-		  .withPackages("com.github.diegopacheco.rxnetty.builder.test")
-		  .withModules(new Module[]{new GuiceModule()})
-		  .start();
 	}
 }

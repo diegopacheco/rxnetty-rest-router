@@ -15,7 +15,6 @@ public class JerseyRouterTest {
 	
 	@Test
 	public void testSimple() throws Throwable {
-    	   System.out.println("Server on 8086... ");
     	   new Thread(new Runnable() {
 			public void run() {
 				  HttpServer

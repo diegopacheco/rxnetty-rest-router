@@ -6,7 +6,7 @@ public class GuiceModule extends AbstractModule{
 	
 	@Override
 	protected void configure() {
-		bind(RestInfo.class).asEagerSingleton();
+		bind(RestInfoSecond.class).asEagerSingleton();
 	}
 	
 }

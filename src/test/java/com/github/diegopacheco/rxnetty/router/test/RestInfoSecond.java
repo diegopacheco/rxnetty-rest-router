@@ -5,10 +5,11 @@ import javax.ws.rs.Path;
 
 import rx.Observable;
 
-@Path("/info/now")
-public class RestInfo {
+@Path("/info")
+public class RestInfoSecond {
 	
 	@GET
+	@Path("now")
 	public String work(){
 		return "OK";
 	}

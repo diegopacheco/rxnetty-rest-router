@@ -7,7 +7,9 @@ This project is a simple sample of a JAX-RS Jesery router for RxNetty Server.
 * RxNetty Builder
 * Jersey Router
 * Converts results to observables if they are not Observables. 
-* Inject Request and Response parameters if method siognature present.
+* Guice 4 Integration and Support
+* Inject Request and Response parameters if method signature present.
+
 
 ## Sample
 

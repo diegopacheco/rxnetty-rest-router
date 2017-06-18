@@ -10,6 +10,27 @@ This project is a simple sample of a JAX-RS Jesery router for RxNetty Server.
 * Guice 4 Integration and Support
 * Inject Request and Response parameters if method signature present.
 
+## Usage
+
+You can find the jar at sonatype central repository https://oss.sonatype.org/service/local/repositories/releases/content/com/github/diegopacheco/rxnetty-rest-router/0.1/ 
+
+Maven 
+```xml
+<dependency>
+  <groupId>com.github.diegopacheco</groupId>
+  <artifactId>rxnetty-rest-router</artifactId>
+  <version>0.1</version>
+</dependency>
+```
+
+Gradle
+```groovy
+dependencies {
+	compile([
+	       'com.github.diegopacheco:rxnetty-rest-router:0.1'
+        ])
+}
+```
 
 ## Sample
 

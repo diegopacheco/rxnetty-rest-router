@@ -116,12 +116,12 @@ uploadArchives {
 }
 
 nexusStaging {
-  username ossrhUsername
-  password ossrhPassword
-  packageGroup "com.github.diegopacheco"
+  username = "${nexusUsername}"
+  password = "${nexusPassword}"
+  packageGroup = "${group}"
 }
 
-task generatePom << {
+task generatePom {
     pom {
         project {
             name project.name

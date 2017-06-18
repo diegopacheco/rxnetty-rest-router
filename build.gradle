@@ -1,5 +1,7 @@
 apply plugin: "eclipse"
 apply plugin: "java"
+apply plugin: "signing"
+apply plugin: "maven"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -19,14 +21,14 @@ repositories {
 dependencies {
 	compile([
 	       'io.reactivex:rxnetty-http:0.5.2',
-	     	
+
 	       'com.google.inject:guice:4.1.0',
-	     	
+
 	       'org.glassfish.jersey.core:jersey-server:2.7',
-		   'org.glassfish.jersey.containers:jersey-container-servlet-core:2.7',
-		   'org.glassfish.jersey.containers:jersey-container-jetty-http:2.7',
-		   
-		   'org.slf4j:slf4j-log4j12:1.7.25',
+		     'org.glassfish.jersey.containers:jersey-container-servlet-core:2.7',
+		     'org.glassfish.jersey.containers:jersey-container-jetty-http:2.7',
+
+		     'org.slf4j:slf4j-log4j12:1.7.25',
     ])
     testCompile([
 	       'junit:junit:4.12',
@@ -37,4 +39,75 @@ eclipse {
     classpath {
        downloadSources=true
     }
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+    }
+}
+
+apply plugin: 'io.codearte.nexus-staging'
+
+signing {
+     sign configurations.archives
+}
+
+uploadArchives {
+     repositories {
+         mavenDeployer {
+             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                 authentication(userName: ossrhUser, password: ossrhPassword)
+             }
+             pom.project {
+                 name project.name
+                 description project.description
+                 packaging 'jar'
+                 url 'https://github.com/diegopacheco/rxnetty-rest-router'
+
+                 scm {
+                     connection 'scm:git:https://github.com/diegopacheco/rxnetty-rest-router.git'
+                     developerConnection 'scm:git:git@github.com:diegopacheco/rxnetty-rest-router.git'
+                     url 'https://github.com/diegopacheco/rxnetty-rest-router.git'
+                 }
+                 licenses {
+                     license {
+                         name 'The Unlicense'
+                         url 'http://unlicense.org/'
+                         distribution 'repo'
+                     }
+                 }
+                 developers {
+                     developer {
+                         id = 'diegopacheco'
+                         name = 'Diego Pacheco'
+                         email = 'diego.pacheco.it@mail.com'
+                     }
+                 }
+             }
+         }
+     }
+}
+
+nexusStaging {
+  username = ossrhUser
+  password = ossrhPassword
 }

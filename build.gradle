@@ -3,6 +3,10 @@ apply plugin: "java"
 apply plugin: "signing"
 apply plugin: "maven"
 
+group = 'com.github.diegopacheco'
+archivesBaseName = "rxnetty-rest-router"
+version = '0.1'
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -74,9 +78,15 @@ uploadArchives {
      repositories {
          mavenDeployer {
              beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
              repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                 authentication(userName: ossrhUser, password: ossrhPassword)
+               authentication(userName: ossrhUsername, password: ossrhPassword)
              }
+
+             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+               authentication(userName: ossrhUsername, password: ossrhPassword)
+             }
+
              pom.project {
                  name project.name
                  description project.description
@@ -108,6 +118,6 @@ uploadArchives {
 }
 
 nexusStaging {
-  username = ossrhUser
+  username = ossrhUsername
   password = ossrhPassword
 }

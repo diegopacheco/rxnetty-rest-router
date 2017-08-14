@@ -4,14 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 /**
  * AnnotationScanner Scanns Classpath for Specific Anotations.
@@ -24,6 +28,7 @@ public class AnnotationScanner {
 	
 	private String basePackage;
 	private Map<String,Method> handlers = new HashMap<>();
+	private List<PatternMethod> patternsMethods = new ArrayList<>();;
 	
 	public AnnotationScanner(String basePackage) {
 		this.basePackage = basePackage;
@@ -34,6 +39,10 @@ public class AnnotationScanner {
 		return handlers;
 	}
 	
+	public List<PatternMethod> getPatternsMethods() {
+		return patternsMethods;
+	}
+
 	private void init(){
 	    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	    assert classLoader != null;
@@ -68,13 +77,32 @@ public class AnnotationScanner {
 	            classes.addAll(findClasses(file, packageName + "." + file.getName()));
 	        } else if (file.getName().endsWith(".class")) {
 	            try {
+	            	
 	            	Class c = Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6));
 					Annotation annotationClass = c.getDeclaredAnnotation(Path.class);
 	            	if (annotationClass!=null){
+	            	
 	            		for(Method m : c.getDeclaredMethods()){
 	            			Annotation annotationPath = m.getDeclaredAnnotation(Path.class);
 	            			if(annotationPath!=null){
-	            				handlers.put( ((Path)annotationClass).value() + "/" + ((Path)annotationPath).value(), m);
+	            				
+	            				if(containsAnnotation(m.getParameters(),PathParam.class)){
+	            				
+	            					String pattern = ((Path)annotationClass).value() + "/" + ((Path)annotationPath).value() + "/";
+	            					String basePath = pattern;
+	            					for(Annotation[] ma: m.getParameterAnnotations()){
+	            						if (ma[0] instanceof PathParam){
+	            							PathParam pp = (PathParam)ma[0];
+	            							pattern = pattern.replace("{" + pp.value() + "}", "\\w*");
+	            							basePath = basePath.replace("{" + pp.value() + "}/", "");
+	            						}
+	            					}
+	            					patternsMethods.add(new PatternMethod(Pattern.compile(pattern), m, basePath));
+	            					
+	            				} else {
+	            					handlers.put( ((Path)annotationClass).value() + "/" + ((Path)annotationPath).value(), m);
+	            				}
+	            				
 	            			}
 	            		}
 	            		classes.add(c);
@@ -87,5 +115,15 @@ public class AnnotationScanner {
 	    return classes;
 	}
 	
+	private boolean containsAnnotation(Parameter[] source,Class seek){
+		for(Parameter p: Arrays.asList(source)){
+			List<Annotation> s = Arrays.asList(p.getDeclaredAnnotations());
+			for(Annotation a: s){
+				if (a.toString().contains(seek.getName()))
+					return true;
+			}
+		}
+		return false;
+	}
 	
 }

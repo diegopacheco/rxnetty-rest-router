@@ -2,6 +2,7 @@ package com.github.diegopacheco.rxnetty.builder.test;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
@@ -15,6 +16,12 @@ public class RestInfo {
 	@Path("now")
 	public String work(){
 		return "OK";
+	}
+	
+	@GET
+	@Path("path/{a}/{b}")
+	public String query(@PathParam("a") String a, @PathParam("b") String b){
+		return "Path: " +  a + " - " + b;
 	}
 	
 	@GET
@@ -38,7 +45,7 @@ public class RestInfo {
 	@GET
 	@Path("rr")
 	public Observable<String> workObRes(HttpServerRequest<ByteBuf> req,HttpServerResponse<ByteBuf> resp){
-		resp.setHeader("CREATED_BY", "DIEGO");
+		resp.getHeaders().add("CREATED_BY", "DIEGO");
 		return Observable.just("OKReqResp");
 	}
 	

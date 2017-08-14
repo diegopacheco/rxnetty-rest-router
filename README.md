@@ -33,7 +33,7 @@ Gradle
 ```groovy
 dependencies {
 	compile([
-	       'com.github.diegopacheco:rxnetty-rest-router:0.1'
+	       'com.github.diegopacheco:rxnetty-rest-router:0.2'
         ])
 }
 ```

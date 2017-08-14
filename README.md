@@ -80,23 +80,23 @@ import rx.Observable;
 @Path("/info")
 public class RestInfo {
 
-  @GET
-	@Path("rr")
-	public Observable<String> workObRes(HttpServerRequest<ByteBuf> req,HttpServerResponse<ByteBuf> resp){
-		resp.setHeader("CREATED_BY", "DIEGO");
-		return Observable.just("OKReqResp");
-	}
+   @GET
+   @Path("rr")
+   public Observable<String> workObRes(HttpServerRequest<ByteBuf> req,HttpServerResponse<ByteBuf> resp){
+	resp.setHeader("CREATED_BY", "DIEGO");
+	return Observable.just("OKReqResp");
+   }
 
-  @GET
-	@Path("now")
-	public String work(){
-		return "OK";
-	}
+   @GET
+   @Path("now")
+   public String work(){
+	return "OK";
+   }
 
   @GET
   @Path("path/{a}/{b}")
   public String query(@PathParam("a") String a, @PathParam("b") String b){
-    return "Path: " +  a + " - " + b;
+       return "Path: " +  a + " - " + b;
   }
 
 }

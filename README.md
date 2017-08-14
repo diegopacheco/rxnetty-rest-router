@@ -18,14 +18,14 @@ This project is a simple sample of a JAX-RS Jesery router for RxNetty Server.
 
 ## Usage
 
-You can find the jar at sonatype central repository https://oss.sonatype.org/service/local/repositories/releases/content/com/github/diegopacheco/rxnetty-rest-router/0.1/
+You can find the jar at sonatype central repository https://oss.sonatype.org/service/local/repositories/releases/content/com/github/diegopacheco/rxnetty-rest-router/0.2/
 
 Maven
 ```xml
 <dependency>
   <groupId>com.github.diegopacheco</groupId>
   <artifactId>rxnetty-rest-router</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 </dependency>
 ```
 
@@ -80,18 +80,25 @@ import rx.Observable;
 @Path("/info")
 public class RestInfo {
 
-        @GET
+  @GET
 	@Path("rr")
 	public Observable<String> workObRes(HttpServerRequest<ByteBuf> req,HttpServerResponse<ByteBuf> resp){
 		resp.setHeader("CREATED_BY", "DIEGO");
 		return Observable.just("OKReqResp");
 	}
 
-        @GET
+  @GET
 	@Path("now")
 	public String work(){
 		return "OK";
 	}
+
+  @GET
+  @Path("path/{a}/{b}")
+  public String query(@PathParam("a") String a, @PathParam("b") String b){
+    return "Path: " +  a + " - " + b;
+  }
+
 }
 ```
 
@@ -99,7 +106,22 @@ Testing
 ```java
 curl -v http://127.0.0.1:9090/info/now
 curl -v http://127.0.0.1:9090/info/rr
+curl -v http://127.0.0.1:9090/info/path/10/6
 ```
+
+## Release
+
+#### 0.2
+
+* Support for @PathParam annotation in class and method level.
+
+#### 0.1
+
+* RxNetty Builder
+* Jersey Router
+* Converts results to observables if they are not Observables.
+* Guice 4 Integration and Support
+* Inject Request and Response parameters if method signature present.
 
 Cheers, <BR>
 Diego Pacheco

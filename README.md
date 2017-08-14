@@ -6,15 +6,21 @@ This project is a simple sample of a JAX-RS Jesery router for RxNetty Server.
 
 * RxNetty Builder
 * Jersey Router
-* Converts results to observables if they are not Observables. 
+* Support for @PathParam annotation in class and method level.
+* Converts results to observables if they are not Observables.
 * Guice 4 Integration and Support
 * Inject Request and Response parameters if method signature present.
 
+## Future Work(Pending)
+
+* Add Suport for @QueryParam
+* Add Support other typez like Long, Double and Boolean
+
 ## Usage
 
-You can find the jar at sonatype central repository https://oss.sonatype.org/service/local/repositories/releases/content/com/github/diegopacheco/rxnetty-rest-router/0.1/ 
+You can find the jar at sonatype central repository https://oss.sonatype.org/service/local/repositories/releases/content/com/github/diegopacheco/rxnetty-rest-router/0.1/
 
-Maven 
+Maven
 ```xml
 <dependency>
   <groupId>com.github.diegopacheco</groupId>
@@ -47,17 +53,17 @@ public class ServerApp{
 }
 ```
 
-GuiceModule 
+GuiceModule
 ```java
 import com.google.inject.AbstractModule;
 
 public class GuiceModule extends AbstractModule{
-	
+
 	@Override
 	protected void configure() {
 		bind(RestInfo.class).asEagerSingleton();
 	}
-	
+
 }
 ```
 
@@ -73,14 +79,14 @@ import rx.Observable;
 
 @Path("/info")
 public class RestInfo {
-  
+
         @GET
 	@Path("rr")
 	public Observable<String> workObRes(HttpServerRequest<ByteBuf> req,HttpServerResponse<ByteBuf> resp){
 		resp.setHeader("CREATED_BY", "DIEGO");
 		return Observable.just("OKReqResp");
 	}
-  
+
         @GET
 	@Path("now")
 	public String work(){
